@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge AI · MCA Skill Gap Analysis</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-dark { background: #4338ca; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-accent { border-color: #4f46e5; }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 40%, #ffffff 70%, #f5f3ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: #4f46e5;
+            box-shadow: 0 20px 40px -16px rgba(79, 70, 229, 0.15);
+        }
+        
+        .stat-card {
+            transition: all 0.25s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: #4f46e5;
+        }
+        
+        .step-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            background: white;
+        }
+        .step-circle.active {
+            border-color: #4f46e5;
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.4);
+        }
+        .step-circle:hover {
+            transform: scale(1.05);
+            border-color: #4f46e5;
+        }
+        
+        .testimonial-card {
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            border-color: #4f46e5;
+        }
+        
+        .cta-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        
+        .navbar-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- ============ HEADER ============ -->
+    <header class="bg-white/80 navbar-blur border-b border-gray-100/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 bg-accent rounded-xl flex items-center justify-center text-white text-sm font-extrabold shadow-md shadow-accent/25">SB</div>
+                <span class="text-xl font-extrabold tracking-tight">SkillBridge</span>
+                <span class="text-[10px] font-bold text-white bg-accent px-2.5 py-1 rounded-full tracking-wider">AI</span>
+            </div>
+            
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-medium">
+                <a href="#features" class="text-gray-600 hover:text-accent transition-colors">Features</a>
+                <a href="#research" class="text-gray-600 hover:text-accent transition-colors">Research</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-accent transition-colors">How it works</a>
+                <a href="#testimonials" class="text-gray-600 hover:text-accent transition-colors">Testimonials</a>
+                <a href="/research-paper" class="text-gray-600 hover:text-accent transition-colors">Paper</a>
+            </nav>
+            
+            <div class="flex items-center gap-3">
+                <a href="/login" class="text-sm font-medium text-gray-600 hover:text-accent transition-colors">Sign in</a>
+                <a href="/signup" class="text-sm font-semibold bg-accent text-white px-5 py-2.5 rounded-xl hover:bg-accent-dark transition-all shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30">
+                    Get started <i class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ============ HERO ============ -->
+    <section class="hero-gradient py-20 lg:py-28 relative">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Left Content -->
+                <div>
+                    <div class="inline-flex items-center gap-2.5 bg-accent-light text-accent text-xs font-bold px-4 py-2 rounded-full mb-6 border border-accent/10">
+                        <span class="w-2 h-2 bg-accent rounded-full pulse-dot"></span>
+                        Based on research with 153 participants
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
+                        Bridge the MCA<br>
+                        <span class="text-accent">skill gap</span>
+                        with AI
+                    </h1>
+                    
+                    <p class="text-lg text-gray-500 mt-6 max-w-lg leading-relaxed">
+                        Personalized learning roadmaps powered by real industry data. 
+                        Used by <strong class="text-gray-700">87 MCA students</strong> and validated by 
+                        <strong class="text-gray-700">66 industry professionals</strong>.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4 mt-8">
+                        <a href="/signup" class="bg-accent text-white px-8 py-3.5 rounded-xl font-bold hover:bg-accent-dark transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
+                            Start assessment
+                            <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                        <a href="#how-it-works" class="border-2 border-gray-300 text-gray-700 px-8 py-3.5 rounded-xl font-bold hover:border-accent hover:text-accent transition-all">
+                            <i class="fa-regular fa-circle-play mr-2"></i> See how
+                        </a>
+                    </div>
+                    
+                    <div class="flex items-center gap-6 mt-8 text-sm text-gray-500">
+                        <span class="flex items-center gap-2"><i class="fa-regular fa-circle-check text-accent"></i> Free forever</span>
+                        <span class="flex items-center gap-2"><i class="fa-regular fa-circle-check text-accent"></i> No credit card</span>
+                        <span class="flex items-center gap-2"><i class="fa-regular fa-circle-check text-accent"></i> AI-powered</span>
+                    </div>
+                </div>
+                
+                <!-- Right Content - Platform Preview -->
+                <div class="relative">
+                    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-2xl shadow-gray-200/50">
+                        <div class="flex items-center justify-between mb-5">
+                            <span class="text-sm font-bold text-gray-700">📊 Platform preview</span>
+                            <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded">Interactive</span>
+                        </div>
+                        
+                        <!-- Mock Dashboard Preview -->
+                        <div class="space-y-4">
+                            <!-- Skill bars -->
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1.5">
+                                    <span class="text-gray-600">Programming</span>
+                                    <span class="text-gray-400">3.3 / 4</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 82%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1.5">
+                                    <span class="text-gray-600">Database Management</span>
+                                    <span class="text-gray-400">2.8 / 4</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1.5">
+                                    <span class="text-gray-600">Problem Solving</span>
+                                    <span class="text-gray-400">3.5 / 4</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-accent h-2 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100 text-xs font-medium text-gray-500">
+                            <span>💡 <span class="text-gray-700">Ready to see your profile?</span></span>
+                            <a href="/signup" class="text-accent font-bold hover:text-accent-dark transition-colors">
+                                Get started <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative elements -->
+                    <div class="absolute -top-3 -right-3 w-16 h-16 bg-accent/5 rounded-full blur-xl"></div>
+                    <div class="absolute -bottom-3 -left-3 w-16 h-16 bg-accent/5 rounded-full blur-xl"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ STATS ============ -->
+    <section class="py-14 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="stat-card bg-gray-50 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-extrabold text-accent">153</div>
+                    <div class="text-sm font-medium text-gray-600 mt-1">Total respondents</div>
+                    <div class="text-xs text-gray-400 mt-0.5">87 students · 66 industry</div>
+                </div>
+                <div class="stat-card bg-gray-50 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-extrabold text-accent">14</div>
+                    <div class="text-sm font-medium text-gray-600 mt-1">Skills analyzed</div>
+                    <div class="text-xs text-gray-400 mt-0.5">10 tech · 4 soft</div>
+                </div>
+                <div class="stat-card bg-gray-50 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-extrabold text-accent">4</div>
+                    <div class="text-sm font-medium text-gray-600 mt-1">Week roadmap</div>
+                    <div class="text-xs text-gray-400 mt-0.5">Personalized plan</div>
+                </div>
+                <div class="stat-card bg-gray-50 rounded-2xl p-6 text-center">
+                    <div class="text-4xl font-extrabold text-emerald-600">100%</div>
+                    <div class="text-sm font-medium text-gray-600 mt-1">Free access</div>
+                    <div class="text-xs text-gray-400 mt-0.5">No hidden charges</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ FEATURES ============ -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <span class="text-xs font-bold text-accent bg-accent-light px-4 py-1.5 rounded-full">Features</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Everything you need to grow</h2>
+                <p class="text-gray-500 mt-3">Identify gaps, get a roadmap, track your progress</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="feature-card bg-white rounded-2xl p-7">
+                    <div class="w-14 h-14 bg-accent-light rounded-2xl flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-regular fa-chart-line text-accent"></i>
+                    </div>
+                    <h3 class="font-extrabold text-lg">Gap analysis</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">Compare your skills against industry benchmarks from 153 research participants.</p>
+                    <div class="mt-4 text-sm font-bold text-accent flex items-center gap-1.5">
+                        Radar charts <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white rounded-2xl p-7">
+                    <div class="w-14 h-14 bg-accent-light rounded-2xl flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-regular fa-robot text-accent"></i>
+                    </div>
+                    <h3 class="font-extrabold text-lg">AI roadmaps</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">Get a personalized 4-week learning plan with resources, targets, and milestones.</p>
+                    <div class="mt-4 text-sm font-bold text-accent flex items-center gap-1.5">
+                        Powered by Gemini <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+                
+                <div class="feature-card bg-white rounded-2xl p-7">
+                    <div class="w-14 h-14 bg-accent-light rounded-2xl flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-regular fa-chart-simple text-accent"></i>
+                    </div>
+                    <h3 class="font-extrabold text-lg">Progress tracking</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">Save multiple assessments, track improvement, earn badges and level up.</p>
+                    <div class="mt-4 text-sm font-bold text-accent flex items-center gap-1.5">
+                        Gamified learning <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ RESEARCH ============ -->
+    <section id="research" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="text-xs font-bold text-accent bg-accent-light px-4 py-1.5 rounded-full">Research</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Research foundation</h2>
+                    <p class="text-gray-600 mt-3 leading-relaxed text-lg font-medium">
+                        "Skill Gap Analysis between MCA Curriculum and Industry Requirements"
+                    </p>
+                    <p class="text-gray-500 mt-1">A Study of Mumbai University Students</p>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <div class="text-xs text-gray-500 font-medium">Industry expects</div>
+                            <div class="font-extrabold text-lg">3.0–4.6 / 4</div>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <div class="text-xs text-gray-500 font-medium">Student average</div>
+                            <div class="font-extrabold text-lg">1.2–2.7 / 4</div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                            <div class="text-xs text-red-500 font-medium">Largest gap</div>
+                            <div class="font-extrabold text-lg text-red-500">DBMS (1.79)</div>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                            <div class="text-xs text-emerald-500 font-medium">Smallest gap</div>
+                            <div class="font-extrabold text-lg text-emerald-600">Web Dev (0.33)</div>
+                        </div>
+                    </div>
+                    
+                    <a href="/research-paper" class="inline-flex items-center gap-2 mt-6 text-accent font-bold hover:text-accent-dark transition-colors">
+                        Read full paper <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+                
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-8">
+                    <div class="text-sm font-bold text-gray-700 mb-5">📋 Study details</div>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-3.5">
+                            <span class="text-gray-500">Total respondents</span>
+                            <span class="font-extrabold text-lg">153</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-3.5">
+                            <span class="text-gray-500">Students</span>
+                            <span class="font-extrabold text-lg">87</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-gray-200 pb-3.5">
+                            <span class="text-gray-500">Industry professionals</span>
+                            <span class="font-extrabold text-lg">66</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500">Institution</span>
+                            <span class="font-extrabold">Mumbai University</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 p-4 bg-accent-light/50 rounded-xl border border-accent/10">
+                        <div class="flex items-center gap-2 text-xs font-semibold text-accent">
+                            <i class="fa-regular fa-flask"></i> Methodology
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1 leading-relaxed">Quantitative descriptive approach using structured questionnaires and 5-point Likert scale analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ HOW IT WORKS ============ -->
+    <section id="how-it-works" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <span class="text-xs font-bold text-accent bg-accent-light px-4 py-1.5 rounded-full">Process</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">How it works</h2>
+                <p class="text-gray-500 mt-3">Three simple steps to transform your learning</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-10 relative">
+                <div class="hidden md:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-gray-200"></div>
+                
+                <div class="text-center relative">
+                    <div class="step-circle active">1</div>
+                    <h3 class="font-extrabold text-lg mt-5">Self-assessment</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed max-w-xs mx-auto">Rate your proficiency in 14 skills on a 0-4 scale. Takes less than 5 minutes.</p>
+                </div>
+                
+                <div class="text-center relative">
+                    <div class="step-circle">2</div>
+                    <h3 class="font-extrabold text-lg mt-5">Gap analysis</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed max-w-xs mx-auto">See where you stand compared to industry expectations. Identify critical gaps instantly.</p>
+                </div>
+                
+                <div class="text-center relative">
+                    <div class="step-circle">3</div>
+                    <h3 class="font-extrabold text-lg mt-5">Get roadmap</h3>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed max-w-xs mx-auto">Receive a personalized 4-week learning plan with resources, milestones, and quick wins.</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/signup" class="bg-accent text-white px-10 py-4 rounded-xl font-extrabold hover:bg-accent-dark transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
+                    Get started now
+                    <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ TESTIMONIALS ============ -->
+    <section id="testimonials" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <span class="text-xs font-bold text-accent bg-accent-light px-4 py-1.5 rounded-full">Testimonials</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">What students say</h2>
+                <p class="text-gray-500 mt-3">Real feedback from MCA students</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="testimonial-card bg-gray-50 rounded-2xl p-6">
+                    <div class="flex gap-1 text-amber-400 text-sm mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-700 leading-relaxed">"The personalized roadmap helped me focus on exactly what I needed. My DBMS skills improved from Basic to Advanced in just 4 weeks!"</p>
+                    <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-200">
+                        <div class="w-10 h-10 bg-accent-light rounded-full flex items-center justify-center text-accent font-bold text-sm">AP</div>
+                        <div>
+                            <div class="text-sm font-bold">Anushka Pathak</div>
+                            <div class="text-xs text-gray-400">MCA Student</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 rounded-2xl p-6">
+                    <div class="flex gap-1 text-amber-400 text-sm mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-700 leading-relaxed">"The gap analysis showed me exactly where I was falling short. The AI-generated resources were spot on and free!"</p>
+                    <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-200">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-sm">NN</div>
+                        <div>
+                            <div class="text-sm font-bold">Nandini Naik</div>
+                            <div class="text-xs text-gray-400">MCA Student</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 rounded-2xl p-6">
+                    <div class="flex gap-1 text-amber-400 text-sm mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-sm text-gray-700 leading-relaxed">"The job role matcher helped me discover I'm suited for Frontend Development. Now I have a clear career path!"</p>
+                    <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-200">
+                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold text-sm">PP</div>
+                        <div>
+                            <div class="text-sm font-bold">Prerna Panda</div>
+                            <div class="text-xs text-gray-400">MCA Graduate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============ CTA ============ -->
+    <section class="cta-gradient py-20">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white">Ready to bridge your skill gap?</h2>
+            <p class="text-white/80 text-lg mt-3">Join thousands of MCA students using AI to accelerate their careers</p>
+            <div class="flex flex-wrap justify-center gap-4 mt-8">
+                <a href="/signup" class="bg-white text-accent px-10 py-4 rounded-xl font-extrabold hover:bg-gray-50 transition-all shadow-xl">
+                    Create free account <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+            </div>
+            <p class="text-white/50 text-sm mt-5">✨ No credit card required · Free forever · Cancel anytime</p>
+        </div>
+    </section>
+    
+    <!-- ============ FOOTER ============ -->
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-10">
+                <div>
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm font-extrabold">SB</div>
+                        <span class="text-white font-extrabold text-lg">SkillBridge</span>
+                    </div>
+                    <p class="text-sm leading-relaxed">Bridging the gap between MCA education and industry requirements with AI-powered personalized learning.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-4">Product</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition-colors">How it works</a></li>
+                        <li><a href="#research" class="hover:text-white transition-colors">Research</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-4">Company</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-4">Research</h4>
+                    <ul class="space-y-2.5 text-sm">
+                        <li><a href="/research-paper" class="hover:text-white transition-colors">Download paper</a></li>
+                        <li><a href="/methodology" class="hover:text-white transition-colors">Methodology</a></li>
+                        <li><a href="/citations" class="hover:text-white transition-colors">Citations</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-10 pt-8 text-center text-sm text-gray-600">
+                &copy; 2026 SkillBridge AI. Based on research "Skill Gap Analysis between MCA Curriculum and Industry Requirements".
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-dark { background: #4338ca; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        
+        .skill-card { transition: all 0.15s ease; border: 1px solid #f1f5f9; }
+        .skill-card:hover { border-color: #4f46e5; }
+        
+        .level-btn {
+            transition: all 0.15s ease;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 0;
+            border-radius: 6px;
+            border: 1.5px solid transparent;
+        }
+        .level-btn:hover { transform: translateY(-1px); }
+        .level-btn.selected-0 { background: #f3f4f6; color: #374151; border-color: #9ca3af; }
+        .level-btn.selected-1 { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+        .level-btn.selected-2 { background: #dbeafe; color: #1e40af; border-color: #3b82f6; }
+        .level-btn.selected-3 { background: #d1fae5; color: #065f46; border-color: #10b981; }
+        .level-btn.selected-4 { background: #ede9fe; color: #4c1d95; border-color: #8b5cf6; }
+        .level-btn:not(.selected-0):not(.selected-1):not(.selected-2):not(.selected-3):not(.selected-4) {
+            background: #f9fafb; color: #6b7280; border-color: #e5e7eb;
+        }
+        .level-btn:not(.selected-0):not(.selected-1):not(.selected-2):not(.selected-3):not(.selected-4):hover {
+            border-color: #9ca3af;
+        }
+        
+        .step { transition: all 0.2s ease; }
+        .step.active { background: #4f46e5; color: white; }
+        .step.done { background: #10b981; color: white; }
+        .step.inactive { background: #f1f5f9; color: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-6 py-3.5 flex justify-between items-center">
+            <a href="/student/dashboard" class="text-sm text-gray-500 hover:text-accent transition-colors">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Dashboard
+            </a>
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-accent rounded-lg flex items-center justify-center text-white text-xs font-bold">SB</div>
+                <span class="text-sm font-bold tracking-tight">SkillBridge</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="max-w-6xl mx-auto px-6 py-8">
+        
+        <!-- Steps -->
+        <div class="flex items-center justify-center gap-4 mb-6">
+            <div class="step active w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+            <div class="w-16 h-0.5 bg-gray-200"></div>
+            <div class="step inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+            <div class="w-16 h-0.5 bg-gray-200"></div>
+            <div class="step inactive w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+        </div>
+        <div class="flex justify-center gap-12 text-xs text-gray-400 mb-8">
+            <span class="text-accent font-semibold">📝 Rate skills</span>
+            <span>📊 Analysis</span>
+            <span>🗺️ Roadmap</span>
+        </div>
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight">Rate your skills</h1>
+            <p class="text-gray-500 mt-1">Select your proficiency level for each skill</p>
+            <div class="flex items-center justify-center gap-5 mt-4 text-xs font-medium">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-gray-300 rounded"></span> 0 None</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-400 rounded"></span> 1 Basic</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-blue-400 rounded"></span> 2 Inter.</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-400 rounded"></span> 3 Adv.</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-purple-400 rounded"></span> 4 Expert</span>
+            </div>
+        </div>
+        
+        <form method="POST" action="/assessment/new" id="assessmentForm">
+            
+            <!-- Profile & Goal -->
+            <div class="grid md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-card">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">📁 Profile name</label>
+                    <input type="text" name="profile_name" value="Current Profile" 
+                           class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all">
+                    <p class="text-xs text-gray-400 mt-1">Create "Current" and "Target" to track improvement</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-card">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">🎯 Career goal <span class="text-gray-400 font-normal">(optional)</span></label>
+                    <input type="text" name="goal" placeholder="e.g. Full Stack Developer, Data Scientist"
+                           class="w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all">
+                </div>
+            </div>
+            
+            <!-- Skills Grid -->
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <!-- Technical -->
+                <div>
+                    <h2 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <span>💻</span> Technical skills
+                        <span class="text-xs text-gray-400 font-normal bg-gray-100 px-2 py-0.5 rounded-full">10</span>
+                    </h2>
+                    <div id="techSkills" class="space-y-3"></div>
+                </div>
+                
+                <!-- Soft -->
+                <div>
+                    <h2 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                        <span>🤝</span> Soft skills
+                        <span class="text-xs text-gray-400 font-normal bg-gray-100 px-2 py-0.5 rounded-full">4</span>
+                    </h2>
+                    <div id="softSkills" class="space-y-3"></div>
+                </div>
+            </div>
+            
+            <!-- Summary -->
+            <div class="bg-accent-light border border-accent/20 rounded-xl p-5 mt-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-extrabold text-accent" id="avgScore">0.0</div>
+                        <div class="text-xs text-gray-500 font-medium">📊 Average</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold text-emerald-600" id="strongestSkill">-</div>
+                        <div class="text-xs text-gray-500 font-medium">🏆 Strongest</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold text-red-500" id="weakestSkill">-</div>
+                        <div class="text-xs text-gray-500 font-medium">⚠️ Weakest</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold text-blue-600" id="estimatedReadiness">0%</div>
+                        <div class="text-xs text-gray-500 font-medium">📈 Est. readiness</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit -->
+            <div class="flex justify-end mt-8">
+                <button type="submit" class="bg-accent text-white px-7 py-3 rounded-xl font-semibold hover:bg-accent-dark transition-all shadow-sm shadow-accent/20 text-sm">
+                    Analyze gaps <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                </button>
+            </div>
+            
+        </form>
+    </div>
+    
+    <script>
+        const techSkills = ["Programming", "Data Structures & Algorithms", "Database Management", "Web Development", "Artificial Intelligence / ML", "DevOps Tools", "Cloud Computing", "Networking & Linux", "Cyber Security", "Data Analytics"];
+        const softSkills = ["Problem Solving", "Analytical Thinking", "Communication Skills", "Teamwork & Collaboration"];
+        const allSkills = [...techSkills, ...softSkills];
+        const levelLabels = { 0: "None", 1: "Basic", 2: "Inter.", 3: "Adv.", 4: "Expert" };
+        let skillValues = {};
+        allSkills.forEach(s => skillValues[s] = 1);
+        
+        function renderSkills() {
+            const techContainer = document.getElementById('techSkills');
+            const softContainer = document.getElementById('softSkills');
+            techContainer.innerHTML = '';
+            softContainer.innerHTML = '';
+            
+            techSkills.forEach(skill => {
+                techContainer.innerHTML += createSkillRow(skill);
+            });
+            softSkills.forEach(skill => {
+                softContainer.innerHTML += createSkillRow(skill);
+            });
+            attachEvents();
+            updateSummary();
+        }
+        
+        function createSkillRow(skill) {
+            const val = skillValues[skill] || 1;
+            const btns = [0,1,2,3,4].map(v => `
+                <button type="button" data-skill="${skill}" data-val="${v}" 
+                    class="level-btn ${v === val ? 'selected-' + v : ''} flex-1">
+                    ${v}
+                </button>
+            `).join('');
+            return `
+                <div class="skill-card bg-white rounded-xl p-4" data-skill="${skill}">
+                    <div class="flex justify-between items-center mb-2.5">
+                        <span class="text-sm font-medium text-gray-800">${skill}</span>
+                        <span class="text-xs text-gray-400 font-medium skill-label">${levelLabels[val]}</span>
+                    </div>
+                    <div class="flex gap-1.5">${btns}</div>
+                    <input type="hidden" name="${skill}" value="${val}">
+                </div>
+            `;
+        }
+        
+        function attachEvents() {
+            document.querySelectorAll('.skill-card').forEach(card => {
+                const skill = card.dataset.skill;
+                const buttons = card.querySelectorAll('.level-btn');
+                const hidden = card.querySelector('input[type="hidden"]');
+                const label = card.querySelector('.skill-label');
+                
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const val = parseInt(this.dataset.val);
+                        skillValues[skill] = val;
+                        hidden.value = val;
+                        
+                        buttons.forEach(b => {
+                            const bv = parseInt(b.dataset.val);
+                            b.className = 'level-btn flex-1';
+                            if (bv === val) {
+                                b.classList.add('selected-' + val);
+                            } else {
+                                b.classList.add('bg-gray-50', 'text-gray-500', 'border-gray-200');
+                            }
+                        });
+                        
+                        if (label) label.textContent = levelLabels[val];
+                        updateSummary();
+                    });
+                });
+            });
+        }
+        
+        function updateSummary() {
+            let total = 0, count = 0, scores = [];
+            for (const [s, v] of Object.entries(skillValues)) {
+                total += v; count++;
+                scores.push({ skill: s, val: v });
+            }
+            const avg = (total / count).toFixed(1);
+            scores.sort((a,b) => b.val - a.val);
+            
+            document.getElementById('avgScore').textContent = avg;
+            document.getElementById('strongestSkill').textContent = scores[0] ? scores[0].skill.substring(0, 14) : '-';
+            document.getElementById('weakestSkill').textContent = scores[scores.length-1] ? scores[scores.length-1].skill.substring(0, 14) : '-';
+            
+            const bench = {
+                "Programming": 3.30, "Data Structures & Algorithms": 3.01, "Database Management": 3.55,
+                "Web Development": 2.90, "Artificial Intelligence / ML": 2.70, "DevOps Tools": 2.95,
+                "Cloud Computing": 2.41, "Networking & Linux": 2.29, "Cyber Security": 2.69,
+                "Data Analytics": 2.76, "Problem Solving": 4.49, "Analytical Thinking": 4.23,
+                "Communication Skills": 4.57, "Teamwork & Collaboration": 4.41
+            };
+            let readiness = 0;
+            for (const [s, v] of Object.entries(skillValues)) {
+                readiness += Math.min(v / (bench[s] || 3.0), 1.0);
+            }
+            document.getElementById('estimatedReadiness').textContent = Math.round((readiness / count) * 100) + '%';
+        }
+        
+        document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+            for (const s of allSkills) {
+                const input = document.querySelector(`input[name="${s}"]`);
+                if (input && !input.value) input.value = skillValues[s] || 1;
+            }
+        });
+        
+        renderSkills();
+    </script>
+</body>
+</html>

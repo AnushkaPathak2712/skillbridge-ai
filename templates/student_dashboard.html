@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-dark { background: #4338ca; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        
+        .stat-card {
+            transition: all 0.2s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: #4f46e5;
+            box-shadow: 0 8px 20px -8px rgba(79, 70, 229, 0.12);
+        }
+        
+        .badge-card {
+            transition: all 0.2s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .badge-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: #f59e0b;
+            box-shadow: 0 8px 20px -8px rgba(245, 158, 11, 0.2);
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+        }
+        
+        .assessment-card {
+            transition: all 0.2s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .assessment-card:hover {
+            border-color: #4f46e5;
+            background: #fafafb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm font-bold">SB</div>
+                <span class="text-xl font-bold tracking-tight">SkillBridge</span>
+                <span class="text-xs font-medium text-white bg-accent px-2 py-0.5 rounded">AI</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm">
+                <span class="text-gray-600 flex items-center gap-1.5">
+                    <i class="fa-regular fa-user-circle"></i> {{ current_user.name }}
+                </span>
+                <a href="/logout" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- Welcome -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold tracking-tight">Hello, {{ current_user.name.split()[0] }} 👋</h1>
+            <p class="text-gray-500 mt-1">Track your progress, earn badges, continue learning</p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div class="stat-card bg-white rounded-xl p-4">
+                <div class="text-xs text-gray-400 font-medium">Assessments</div>
+                <div class="text-2xl font-extrabold text-gray-800">{{ assessments|length }}</div>
+            </div>
+            <div class="stat-card bg-white rounded-xl p-4">
+                <div class="text-xs text-gray-400 font-medium">Badges</div>
+                <div class="text-2xl font-extrabold text-amber-500">{{ badges|length }}</div>
+            </div>
+            <div class="stat-card bg-white rounded-xl p-4">
+                <div class="text-xs text-gray-400 font-medium">Total XP</div>
+                <div class="text-2xl font-extrabold text-emerald-600">{{ current_user.total_xp }}</div>
+            </div>
+            <div class="stat-card bg-white rounded-xl p-4">
+                <div class="text-xs text-gray-400 font-medium">Level</div>
+                <div class="text-2xl font-extrabold text-accent">{{ current_user.level }}</div>
+            </div>
+            <div class="stat-card bg-white rounded-xl p-4">
+                <div class="text-xs text-gray-400 font-medium">Streak</div>
+                <div class="text-2xl font-extrabold text-orange-500" id="streak-days">0</div>
+            </div>
+        </div>
+        
+        <!-- Level Progress -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6 mb-8 shadow-card">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-2">
+                <div>
+                    <span class="font-bold text-gray-800">Level {{ current_user.level }}</span>
+                    <span class="text-xs text-gray-400 ml-2">— {{ get_level_title(current_user.level) }}</span>
+                </div>
+                <span class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{{ xp_needed }} XP to Level {{ next_level }}</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-2.5">
+                {% set progress = (current_user.total_xp % 200) / 2 %}
+                <div class="bg-accent h-2.5 rounded-full transition-all duration-500" style="width: {{ progress }}%"></div>
+            </div>
+        </div>
+        
+        <!-- Two Column -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                
+                <!-- New Assessment -->
+                <a href="/assessment/new" class="inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-accent-dark transition-all shadow-sm shadow-accent/20 mb-6 text-sm">
+                    <i class="fa-regular fa-plus"></i> New assessment
+                </a>
+                
+                <!-- Assessments -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-card">
+                    <div class="border-b border-gray-100 px-6 py-4">
+                        <h2 class="font-bold text-gray-800">Saved assessments</h2>
+                    </div>
+                    
+                    {% if assessments %}
+                        <div class="divide-y divide-gray-100">
+                            {% for assessment in assessments %}
+                            <div class="assessment-card px-6 py-4 flex flex-wrap justify-between items-center gap-3">
+                                <div>
+                                    <div class="font-semibold text-gray-800">{{ assessment.profile_name }}</div>
+                                    <div class="text-xs text-gray-400">{{ assessment.created_at.strftime('%b %d, %Y') }}</div>
+                                    <div class="text-xs text-gray-500 mt-1">Readiness: <span class="font-semibold text-accent">{{ assessment.readiness_score }}%</span></div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <a href="/gap-analysis?assessment={{ assessment.id }}" class="text-sm text-accent hover:text-accent-dark font-medium transition-colors">View</a>
+                                    {% if assessments|length > 1 %}
+                                        <a href="/compare/{{ assessment.id }}/{{ assessments[0].id if assessments[0].id != assessment.id else assessments[1].id }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">Compare</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="py-12 text-center">
+                            <div class="text-5xl mb-3">📝</div>
+                            <p class="text-gray-400 text-sm">No assessments yet. Start your first one.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Progress Chart -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 mt-6 shadow-card">
+                    <h2 class="font-bold text-gray-800 mb-4">Progress timeline</h2>
+                    <canvas id="progressChart" height="180"></canvas>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div>
+                
+                <!-- Badges -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-gray-800">Badges</h2>
+                        <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">{{ badges|length }} earned</span>
+                    </div>
+                    
+                    {% if badges %}
+                        <div class="grid grid-cols-2 gap-3">
+                            {% for badge in badges %}
+                            <div class="badge-card bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 text-center border border-amber-200/50">
+                                <div class="text-3xl mb-1">{{ badge.icon }}</div>
+                                <div class="font-semibold text-sm text-gray-800">{{ badge.name }}</div>
+                                <div class="text-xs text-amber-600 font-medium mt-0.5">+{{ badge.xp_reward }} XP</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6">
+                            <div class="text-4xl mb-3">🎯</div>
+                            <p class="text-gray-400 text-sm">Complete your first assessment to earn badges!</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-4 pt-3 border-t border-gray-100 text-center">
+                        <p class="text-xs text-gray-400"><i class="fa-regular fa-star text-amber-400 mr-1"></i> Complete assessments and close skill gaps to earn more badges</p>
+                    </div>
+                </div>
+                
+                <!-- Quick actions -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-card">
+                    <h2 class="font-bold text-gray-800 mb-4">Quick actions</h2>
+                    <div class="space-y-1.5">
+                        <a href="/assessment/new" class="flex items-center gap-3 text-sm text-gray-700 hover:text-accent transition-colors p-2.5 rounded-lg hover:bg-accent-light">
+                            <i class="fa-regular fa-plus w-5 text-accent"></i> New assessment
+                        </a>
+                        {% if assessments|length >= 2 %}
+                        <a href="/compare/{{ assessments[0].id }}/{{ assessments[1].id }}" class="flex items-center gap-3 text-sm text-gray-700 hover:text-accent transition-colors p-2.5 rounded-lg hover:bg-accent-light">
+                            <i class="fa-regular fa-chart-scatter w-5 text-accent"></i> Compare assessments
+                        </a>
+                        {% endif %}
+                        <button onclick="exportData()" class="flex items-center gap-3 text-sm text-gray-700 hover:text-accent transition-colors p-2.5 rounded-lg hover:bg-accent-light w-full text-left">
+                            <i class="fa-regular fa-download w-5 text-accent"></i> Export data
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tip -->
+                <div class="bg-accent-light border border-accent/20 rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">💡</span>
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">Tip of the day</p>
+                            <p class="text-sm text-gray-600 mt-0.5">Regular assessments help you track progress. Try one every 2–4 weeks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Progress chart
+        {% if assessments %}
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        {% set sorted = assessments|sort(attribute='created_at') %}
+        {% set dates = [] %}
+        {% set scores = [] %}
+        {% for a in sorted %}
+            {% set _ = dates.append(a.created_at.strftime('%b %d')) %}
+            {% set _ = scores.append(a.readiness_score) %}
+        {% endfor %}
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|tojson }},
+                datasets: [{
+                    label: 'Readiness %',
+                    data: {{ scores|tojson }},
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79,70,229,0.06)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#4f46e5',
+                    pointRadius: 4,
+                    borderWidth: 2.5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
+            }
+        });
+        {% endif %}
+        
+        // Streak
+        let streak = localStorage.getItem('streak') || 1;
+        document.getElementById('streak-days').innerText = streak;
+        const lastVisit = localStorage.getItem('lastVisit');
+        const today = new Date().toDateString();
+        if (lastVisit !== today) {
+            if (lastVisit && new Date(lastVisit).getTime() + 86400000 >= new Date().getTime()) {
+                streak = parseInt(streak) + 1;
+            } else if (lastVisit) {
+                streak = 1;
+            }
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastVisit', today);
+            document.getElementById('streak-days').innerText = streak;
+        }
+        
+        function exportData() {
+            let csv = "Date,Profile,Goal,Readiness\n";
+            {% for a in assessments %}
+            csv += "{{ a.created_at.strftime('%Y-%m-%d') }},{{ a.profile_name }},{{ a.goal or '' }},{{ a.readiness_score }}\n";
+            {% endfor %}
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'skillbridge_progress.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        .comparison-row:hover { background: #f9fafb; }
+        .up { color: #10b981; }
+        .down { color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-subtle sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold tracking-tight">SkillBridge</span>
+                <span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded">AI</span>
+            </div>
+            <a href="/student/dashboard" class="text-sm text-gray-500 hover:text-accent transition-colors">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Dashboard
+            </a>
+        </div>
+    </header>
+    
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <h1 class="text-2xl font-bold tracking-tight text-center mb-2">Compare assessments</h1>
+        <p class="text-sm text-gray-500 text-center mb-8">Track your progress over time</p>
+        
+        <!-- Cards -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white border border-subtle rounded-lg overflow-hidden">
+                <div class="bg-accent text-white px-5 py-3 flex justify-between items-center">
+                    <div>
+                        <div class="font-medium">{{ assessment1.profile_name }}</div>
+                        <div class="text-xs text-white/70">{{ assessment1.created_at.strftime('%b %d, %Y') }}</div>
+                    </div>
+                    <div class="bg-white/15 rounded-lg px-4 py-1 text-center">
+                        <div class="text-xl font-bold">{{ assessment1.readiness_score }}%</div>
+                        <div class="text-xs text-white/70">Readiness</div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        {% for s, score in assessment1.get_scores_dict().items() %}
+                        <div>
+                            <div class="flex justify-between text-xs"><span>{{ s }}</span><span>{{ score }}</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-1"><div class="bg-accent h-1 rounded-full" style="width: {{ score * 25 }}%"></div></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white border border-subtle rounded-lg overflow-hidden">
+                <div class="bg-gray-800 text-white px-5 py-3 flex justify-between items-center">
+                    <div>
+                        <div class="font-medium">{{ assessment2.profile_name }}</div>
+                        <div class="text-xs text-white/70">{{ assessment2.created_at.strftime('%b %d, %Y') }}</div>
+                    </div>
+                    <div class="bg-white/15 rounded-lg px-4 py-1 text-center">
+                        <div class="text-xl font-bold">{{ assessment2.readiness_score }}%</div>
+                        <div class="text-xs text-white/70">Readiness</div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        {% for s, score in assessment2.get_scores_dict().items() %}
+                        <div>
+                            <div class="flex justify-between text-xs"><span>{{ s }}</span><span>{{ score }}</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-1"><div class="bg-gray-700 h-1 rounded-full" style="width: {{ score * 25 }}%"></div></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Stats -->
+        <div class="grid md:grid-cols-3 gap-4 mb-8">
+            {% set improvement = assessment2.readiness_score - assessment1.readiness_score %}
+            <div class="bg-white border border-subtle rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold {% if improvement >= 0 %}text-emerald-600{% else %}text-red-500{% endif %}">
+                    {{ "+" if improvement >= 0 }}{{ improvement }}%
+                </div>
+                <div class="text-xs text-gray-500">Readiness change</div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-4 text-center">
+                {% set improved = 0 %}
+                {% for diff in differences.values() %}{% if diff > 0 %}{% set improved = improved + 1 %}{% endif %}{% endfor %}
+                <div class="text-2xl font-bold text-blue-600">{{ improved }}/14</div>
+                <div class="text-xs text-gray-500">Skills improved</div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-4 text-center">
+                {% set best = 0 %}
+                {% for diff in differences.values() %}{% if diff > best %}{% set best = diff %}{% endif %}{% endfor %}
+                <div class="text-2xl font-bold text-purple-600">+{{ "%.1f"|format(best) }}</div>
+                <div class="text-xs text-gray-500">Biggest improvement</div>
+            </div>
+        </div>
+        
+        <!-- Chart -->
+        <div class="bg-white border border-subtle rounded-lg p-6 mb-8">
+            <h2 class="text-sm font-semibold mb-4">Skill comparison</h2>
+            <canvas id="comparisonChart" height="200"></canvas>
+        </div>
+        
+        <!-- Table -->
+        <div class="bg-white border border-subtle rounded-lg overflow-hidden">
+            <div class="border-b border-subtle px-5 py-3">
+                <h2 class="text-sm font-semibold">Skill-by-skill comparison</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50"><tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Skill</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">{{ assessment1.profile_name }}</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">{{ assessment2.profile_name }}</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">Change</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Progress</th>
+                    </tr></thead>
+                    <tbody class="divide-y divide-subtle">
+                        {% set s1 = assessment1.get_scores_dict() %}
+                        {% set s2 = assessment2.get_scores_dict() %}
+                        {% for skill in s1.keys() %}
+                        {% set old = s1[skill] %}{% set new = s2[skill] %}{% set diff = new - old %}
+                        <tr class="comparison-row">
+                            <td class="px-4 py-2 font-medium">{{ skill }}</td>
+                            <td class="px-4 py-2 text-center">{{ "%.1f"|format(old) }}</td>
+                            <td class="px-4 py-2 text-center">{{ "%.1f"|format(new) }}</td>
+                            <td class="px-4 py-2 text-center">
+                                {% if diff > 0 %}<span class="up"><i class="fa-solid fa-arrow-up text-xs"></i> +{{ "%.1f"|format(diff) }}</span>
+                                {% elif diff < 0 %}<span class="down"><i class="fa-solid fa-arrow-down text-xs"></i> {{ "%.1f"|format(diff) }}</span>
+                                {% else %}<span class="text-gray-400">—</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="w-24 bg-gray-100 rounded-full h-1.5">
+                                    {% set pct = ((new - old) / (4 - old) * 100) if old < 4 and new > old else 0 %}
+                                    <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ pct }}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Insights -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-5 mt-8">
+            <h3 class="text-sm font-semibold text-emerald-800 mb-3">Insights</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    {% set best_skill = '' %}{% set best_gap = -999 %}
+                    {% for s, d in differences.items() %}{% if d > best_gap %}{% set best_skill = s %}{% set best_gap = d %}{% endif %}{% endfor %}
+                    <p><span class="font-medium">Biggest improvement:</span> {{ best_skill }} (+{{ "%.1f"|format(best_gap) }})</p>
+                    {% set worst_skill = '' %}{% set worst_gap = 999 %}
+                    {% for s, d in differences.items() %}{% if d < worst_gap %}{% set worst_skill = s %}{% set worst_gap = d %}{% endif %}{% endfor %}
+                    <p class="mt-1"><span class="font-medium">Needs attention:</span> {% if worst_gap < 0 %}{{ worst_skill }} ({{ "%.1f"|format(worst_gap) }}){% else %}None — great work!{% endif %}</p>
+                </div>
+                <div>
+                    <p><span class="font-medium">Next step:</span> Focus on 
+                    {% set lowest = '' %}{% set lowest_score = 5 %}
+                    {% for s, score in s2.items() %}{% if score < lowest_score %}{% set lowest = s %}{% set lowest_score = score %}{% endif %}{% endfor %}
+                    <span class="font-medium text-accent">{{ lowest }}</span> ({{ "%.1f"|format(lowest_score) }}/4)</p>
+                    <a href="/assessment/new" class="inline-block mt-2 bg-accent text-white px-4 py-1.5 rounded-md text-sm hover:bg-accent transition-colors">New assessment</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-3 mt-6 no-print">
+            <button onclick="exportComparison()" class="text-sm bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">Export CSV</button>
+            <button onclick="window.print()" class="text-sm bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">Print</button>
+            <button onclick="shareResults()" class="text-sm bg-accent text-white px-4 py-2 rounded-md hover:bg-accent transition-colors">Share</button>
+        </div>
+    </div>
+    
+    <script>
+        // Chart
+        const skills = []; const s1 = []; const s2 = [];
+        {% for s, score in assessment1.get_scores_dict().items() %}
+            skills.push("{{ s }}"); s1.push({{ score }}); s2.push({{ assessment2.get_scores_dict()[s] }});
+        {% endfor %}
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: skills,
+                datasets: [
+                    { label: '{{ assessment1.profile_name }}', data: s1, backgroundColor: 'rgba(79,70,229,0.6)', borderRadius: 4 },
+                    { label: '{{ assessment2.profile_name }}', data: s2, backgroundColor: 'rgba(16,185,129,0.6)', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, max: 4, ticks: { stepSize: 1 } } }
+            }
+        });
+        
+        function exportComparison() {
+            let csv = "Skill,{{ assessment1.profile_name }},{{ assessment2.profile_name }},Change\n";
+            {% for s, score in assessment1.get_scores_dict().items() %}
+                {% set new = assessment2.get_scores_dict()[s] %}
+                {% set diff = new - score %}
+                csv += "{{ s }},{{ "%.1f"|format(score) }},{{ "%.1f"|format(new) }},{{ "%.1f"|format(diff) }}\n";
+            {% endfor %}
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'comparison.csv';
+            a.click();
+        }
+        
+        function shareResults() {
+            const text = 'Readiness improved from {{ assessment1.readiness_score }}% to {{ assessment2.readiness_score }}%!';
+            navigator.clipboard.writeText(text + ' ' + window.location.href).then(() => alert('Copied!'));
+        }
+    </script>
+</body>
+</html>

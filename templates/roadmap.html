@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        
+        .step { transition: all 0.2s ease; }
+        .step.active { background: #4f46e5; color: white; }
+        .step.done { background: #10b981; color: white; }
+        .step.inactive { background: #f1f5f9; color: #94a3b8; }
+        
+        .roadmap-content h2 { font-size: 1.1rem; font-weight: 600; margin: 1.2rem 0 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid #f1f5f9; }
+        .roadmap-content h2:first-child { margin-top: 0; border-bottom: none; }
+        .roadmap-content h3 { font-size: 0.95rem; font-weight: 600; margin: 0.8rem 0 0.4rem; color: #4f46e5; }
+        .roadmap-content ul { padding-left: 1.2rem; margin: 0.3rem 0; }
+        .roadmap-content li { margin-bottom: 0.2rem; font-size: 0.9rem; color: #374151; }
+        .roadmap-content p { margin-bottom: 0.6rem; font-size: 0.9rem; color: #4b5563; }
+        .roadmap-content strong { color: #1f2937; }
+        
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-subtle sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold tracking-tight">SkillBridge</span>
+                <span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded">AI</span>
+            </div>
+            <div class="flex gap-2 text-sm">
+                <button onclick="window.print()" class="text-gray-600 hover:text-accent transition-colors px-3 py-1 border border-subtle rounded-md">Print</button>
+                <button onclick="downloadPDF()" class="bg-emerald-500 text-white px-3 py-1 rounded-md hover:bg-emerald-600 transition-colors">PDF</button>
+                <a href="/student/dashboard" class="text-gray-600 hover:text-accent transition-colors px-3 py-1 border border-subtle rounded-md">Dashboard</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="max-w-5xl mx-auto px-6 py-8">
+        
+        <!-- Steps -->
+        <div class="flex items-center justify-center gap-4 mb-8 no-print">
+            <div class="step done w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"><i class="fa-solid fa-check text-xs"></i></div>
+            <div class="w-16 h-0.5 bg-green-500"></div>
+            <div class="step done w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"><i class="fa-solid fa-check text-xs"></i></div>
+            <div class="w-16 h-0.5 bg-green-500"></div>
+            <div class="step active w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+        </div>
+        <div class="flex justify-center gap-12 text-xs text-gray-400 mb-8 no-print">
+            <span>Rate skills</span>
+            <span>Analysis</span>
+            <span class="text-accent font-medium">Roadmap</span>
+        </div>
+        
+        <!-- Loading -->
+        <div id="loading" class="text-center py-16">
+            <div class="inline-block w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-sm text-gray-500">Generating roadmap...</p>
+        </div>
+        
+        <!-- Content -->
+        <div id="content" style="display:none;">
+            
+            <div class="bg-accent text-white rounded-lg p-6 mb-6">
+                <div class="flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <div class="text-sm text-white/70">Personalized learning roadmap</div>
+                        <h1 class="text-2xl font-bold">4-week plan</h1>
+                        <div class="text-sm text-white/70 mt-1">Based on your skill assessment</div>
+                    </div>
+                    <div class="text-center bg-white/15 rounded-lg px-5 py-2">
+                        <div class="text-2xl font-bold">{{ readiness }}%</div>
+                        <div class="text-xs text-white/70">Readiness</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 no-print">
+                <div class="bg-white border border-subtle rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400">Critical gaps</div>
+                    <div class="text-xl font-bold" id="criticalCount">0</div>
+                </div>
+                <div class="bg-white border border-subtle rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400">Top priority</div>
+                    <div class="text-sm font-bold truncate" id="topGap">-</div>
+                </div>
+                <div class="bg-white border border-subtle rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400">Duration</div>
+                    <div class="text-xl font-bold">4 weeks</div>
+                </div>
+                <div class="bg-white border border-subtle rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400">Resources</div>
+                    <div class="text-xl font-bold" id="resourceCount">0+</div>
+                </div>
+            </div>
+            
+            <!-- Progress Chart -->
+            <div class="bg-white border border-subtle rounded-lg p-6 mb-6 no-print">
+                <h2 class="text-sm font-semibold mb-4">Projected progress</h2>
+                <canvas id="progressChart" height="160"></canvas>
+            </div>
+            
+            <!-- Roadmap -->
+            <div class="bg-white border border-subtle rounded-lg p-6 mb-6">
+                <div id="roadmapContent" class="roadmap-content"></div>
+            </div>
+            
+            <!-- Quick wins -->
+            <div id="quickWinsSection" class="bg-emerald-50 border border-emerald-200 rounded-lg p-5 mb-6" style="display:none;">
+                <h2 class="text-sm font-semibold text-emerald-800 mb-3">Quick wins</h2>
+                <div id="quickWinsList" class="text-sm text-gray-700"></div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex flex-wrap gap-3 no-print">
+                <button onclick="downloadPDF()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-md font-medium hover:bg-emerald-600 transition-colors text-sm flex-1">PDF</button>
+                <button onclick="copyRoadmap()" class="bg-blue-500 text-white px-5 py-2.5 rounded-md font-medium hover:bg-blue-600 transition-colors text-sm flex-1">Copy</button>
+                <button onclick="shareRoadmap()" class="bg-accent text-white px-5 py-2.5 rounded-md font-medium hover:bg-accent transition-colors text-sm flex-1">Share</button>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        const gaps = {{ gaps|tojson }};
+        const readiness = {{ readiness }};
+        
+        // Stats
+        let criticalCount = 0, topSkill = '', topGap = 0;
+        for (const [s, d] of Object.entries(gaps)) {
+            if (d.gap >= 2.0 || d.tier === 'Critical') criticalCount++;
+            if (d.gap > topGap) { topGap = d.gap; topSkill = s; }
+        }
+        document.getElementById('criticalCount').textContent = criticalCount;
+        document.getElementById('topGap').textContent = topSkill || '-';
+        
+        // Progress chart
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const w1 = Math.min(100, readiness + (100 - readiness) * 0.15);
+        const w2 = Math.min(100, readiness + (100 - readiness) * 0.3);
+        const w3 = Math.min(100, readiness + (100 - readiness) * 0.5);
+        const w4 = Math.min(100, readiness + (100 - readiness) * 0.65);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Now', 'W1', 'W2', 'W3', 'W4'],
+                datasets: [{
+                    label: 'Readiness %',
+                    data: [readiness, w1, w2, w3, w4],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79,70,229,0.05)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#4f46e5',
+                    pointRadius: 4,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { min: 0, max: 100 } }
+            }
+        });
+        
+        // Fetch roadmap
+        fetch('/generate-roadmap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            if (data.roadmap) {
+                const html = marked.parse(data.roadmap);
+                document.getElementById('roadmapContent').innerHTML = html;
+                
+                // Extract quick wins
+                const match = data.roadmap.match(/Quick wins[^\n]*\n([\s\S]*?)(?=\n##|\n\*\*|$)/i);
+                if (match) {
+                    document.getElementById('quickWinsList').innerHTML = marked.parse(match[1]);
+                    document.getElementById('quickWinsSection').style.display = 'block';
+                }
+                
+                const resources = (data.roadmatch(/https?:\/\/[^\s]+/g) || []).length;
+                document.getElementById('resourceCount').textContent = resources || '5+';
+            }
+        })
+        .catch(() => {
+            document.getElementById('loading').innerHTML = `
+                <p class="text-sm text-red-500">Error generating roadmap. Please try again.</p>
+                <button onclick="location.reload()" class="mt-4 bg-accent text-white px-4 py-2 rounded-md text-sm">Retry</button>
+            `;
+        });
+        
+        function downloadPDF() {
+            const el = document.getElementById('content');
+            html2pdf().set({ margin: 0.5, filename: 'skillbridge_roadmap.pdf' }).from(el).save();
+        }
+        
+        function copyRoadmap() {
+            const text = document.getElementById('roadmapContent').innerText;
+            navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+        }
+        
+        function shareRoadmap() {
+            navigator.clipboard.writeText(window.location.href).then(() => alert('Link copied!'));
+        }
+    </script>
+</body>
+</html>

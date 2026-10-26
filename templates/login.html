@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .hover\:text-accent:hover { color: #4f46e5; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    
+    <div class="w-full max-w-md px-6">
+        <div class="text-center mb-8">
+            <div class="text-2xl font-bold text-gray-900">SkillBridge</div>
+            <p class="text-sm text-gray-500 mt-1">Sign in to continue</p>
+        </div>
+        
+        <div class="bg-white border border-subtle rounded-xl shadow-card p-8">
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-3 rounded-lg text-sm {% if category == 'success' %}bg-green-50 text-green-700 border border-green-200{% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="/login">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" name="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                           placeholder="you@example.com">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" name="password" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                           placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="w-full bg-accent text-white py-2 rounded-md font-medium hover:bg-accent transition-colors text-sm">
+                    Sign in
+                </button>
+            </form>
+            
+            <div class="mt-6 pt-6 border-t border-subtle">
+                <div class="text-xs text-gray-500 text-center space-y-1">
+                    <div class="font-medium text-gray-600">Demo accounts</div>
+                    <div>Student: student@skillbridge.com / student123</div>
+                    <div>Faculty: faculty@skillbridge.com / faculty123</div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center text-sm text-gray-500">
+                Don't have an account? <a href="/signup" class="text-accent hover:text-accent transition-colors font-medium">Sign up</a>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="/" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Back to home
+            </a>
+        </div>
+    </div>
+    
+</body>
+</html>

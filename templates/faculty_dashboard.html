@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty · SkillBridge AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .bg-accent { background: #4f46e5; }
+        .bg-accent-light { background: #eef2ff; }
+        .text-accent { color: #4f46e5; }
+        .hover\:bg-accent:hover { background: #4338ca; }
+        .border-subtle { border-color: #f1f5f9; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); }
+        .student-row:hover { background: #f9fafb; }
+        .status-good { background: #d1fae5; color: #065f46; }
+        .status-developing { background: #fef3c7; color: #92400e; }
+        .status-needs { background: #fee2e2; color: #991b1b; }
+        .status-inactive { background: #f3f4f6; color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white border-b border-subtle sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold tracking-tight">SkillBridge</span>
+                <span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded">AI</span>
+                <span class="text-xs bg-accent-light text-accent px-2 py-0.5 rounded ml-2">Faculty</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm">
+                <span class="text-gray-600">{{ current_user.name }}</span>
+                <a href="/logout" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <h1 class="text-2xl font-bold tracking-tight">Department analytics</h1>
+        <p class="text-sm text-gray-500 mt-1">MCA Batch 2024-26 · {{ total_students }} students</p>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
+            <div class="bg-white border border-subtle rounded-lg p-4">
+                <div class="text-xs text-gray-400">Students</div>
+                <div class="text-2xl font-bold">{{ total_students }}</div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-4">
+                <div class="text-xs text-gray-400">Avg readiness</div>
+                <div class="text-2xl font-bold" id="avgReadiness">--</div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-4">
+                <div class="text-xs text-gray-400">Critical gaps</div>
+                <div class="text-2xl font-bold" id="criticalCount">--</div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-4">
+                <div class="text-xs text-gray-400">Improving</div>
+                <div class="text-2xl font-bold" id="improvingCount">--</div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white border border-subtle rounded-lg p-6">
+                <h2 class="text-sm font-semibold mb-4">Skill gap heatmap</h2>
+                <div class="space-y-2 max-h-80 overflow-y-auto">
+                    {% for skill, gap in sorted_gaps %}
+                    <div>
+                        <div class="flex justify-between text-xs"><span>{{ skill }}</span><span class="text-gray-500">{{ gap }}</span></div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            {% set pct = (gap / 4 * 100) | round %}
+                            {% if gap >= 2 %}{% set color = "bg-red-500" %}
+                            {% elif gap >= 1.2 %}{% set color = "bg-orange-400" %}
+                            {% elif gap >= 0.6 %}{% set color = "bg-yellow-400" %}
+                            {% else %}{% set color = "bg-emerald-500" %}{% endif %}
+                            <div class="{{ color }} h-1.5 rounded-full" style="width: {{ pct }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="bg-white border border-subtle rounded-lg p-6">
+                <h2 class="text-sm font-semibold mb-4">Top gaps</h2>
+                <canvas id="topGapsChart" height="250"></canvas>
+            </div>
+        </div>
+        
+        <!-- Students Table -->
+        <div class="bg-white border border-subtle rounded-lg overflow-hidden">
+            <div class="border-b border-subtle px-5 py-3 flex justify-between items-center">
+                <h2 class="text-sm font-semibold">Student performance</h2>
+                <button onclick="exportStudentData()" class="text-xs bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 transition-colors">Export CSV</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Student</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Latest</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Readiness</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Top gap</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Status</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-subtle">
+                        {% for student in students %}
+                        <tr class="student-row">
+                            <td class="px-4 py-3">
+                                <div class="font-medium">{{ student.name }}</div>
+                                <div class="text-xs text-gray-400">{{ student.email }}</div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600">
+                                {% set latest = student.assessments|sort(attribute='created_at_raw', reverse=true)|first if student.assessments else None %}
+                                {{ latest.created_at if latest else 'No assessment' }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if latest %}
+                                <div class="flex items-center gap-2">
+                                    <div class="w-16 bg-gray-100 rounded-full h-1"><div class="bg-accent h-1 rounded-full" style="width: {{ latest.readiness_score }}%"></div></div>
+                                    <span>{{ latest.readiness_score }}%</span>
+                                </div>
+                                {% else %}<span class="text-gray-400">--</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if latest %}
+                                    {% set scores = latest.scores %}
+                                    {% set top_gap = '' %}{% set top_val = -999 %}
+                                    {% for s, v in scores.items() %}
+                                        {% set gap = industry_bench.get(s, 3.0) - v %}
+                                        {% if gap > top_val %}{% set top_gap = s %}{% set top_val = gap %}{% endif %}
+                                    {% endfor %}
+                                    <span class="text-red-500">{{ top_gap }}</span>
+                                    <span class="text-xs text-gray-400">({{ "%.1f"|format(top_val) }})</span>
+                                {% else %}<span class="text-gray-400">--</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if latest %}
+                                    {% if latest.readiness_score >= 70 %}<span class="status-good px-2 py-0.5 rounded text-xs">Good</span>
+                                    {% elif latest.readiness_score >= 40 %}<span class="status-developing px-2 py-0.5 rounded text-xs">Developing</span>
+                                    {% else %}<span class="status-needs px-2 py-0.5 rounded text-xs">Needs help</span>{% endif %}
+                                {% else %}<span class="status-inactive px-2 py-0.5 rounded text-xs">Inactive</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if latest %}
+                                <a href="/gap-analysis?assessment={{ latest.id }}" class="text-accent hover:text-accent text-xs">View</a>
+                                {% else %}<span class="text-gray-400 text-xs">No data</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const sortedGaps = {{ sorted_gaps|tojson }};
+        const students = {{ students|tojson }};
+        const industryBench = {{ industry_bench|tojson }};
+        
+        let total = 0, count = 0, critical = 0, improving = 0;
+        students.forEach(s => {
+            if (s.assessments && s.assessments.length) {
+                const sorted = [...s.assessments].sort((a,b) => (a.created_at_raw || '') > (b.created_at_raw || '') ? -1 : 1);
+                const latest = sorted[0];
+                total += latest.readiness_score; count++;
+                if (latest.scores) {
+                    let hasCritical = false;
+                    for (const [skill, score] of Object.entries(latest.scores)) {
+                        if ((industryBench[skill] || 3.0) - score >= 2.0) { hasCritical = true; break; }
+                    }
+                    if (hasCritical) critical++;
+                }
+                if (s.assessments.length >= 2) {
+                    const byDate = [...s.assessments].sort((a,b) => (a.created_at_raw || '') > (b.created_at_raw || '') ? 1 : -1);
+                    if (byDate[1] && byDate[1].readiness_score > byDate[0].readiness_score) improving++;
+                }
+            }
+        });
+        document.getElementById('avgReadiness').textContent = count ? Math.round(total/count) + '%' : 'N/A';
+        document.getElementById('criticalCount').textContent = critical;
+        document.getElementById('improvingCount').textContent = improving;
+        
+        // Chart
+        const labels = sortedGaps.slice(0,5).map(i => i[0]);
+        const values = sortedGaps.slice(0,5).map(i => i[1]);
+        new Chart(document.getElementById('topGapsChart'), {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Gap', data: values, backgroundColor: ['#ef4444','#f97316','#eab308','#8b5cf6','#3b82f6'], borderRadius: 4 }] },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 4 } } }
+        });
+        
+        function exportStudentData() {
+            let csv = "Student,Email,Readiness,Top Gap\n";
+            students.forEach(s => {
+                if (s.assessments && s.assessments.length) {
+                    const sorted = [...s.assessments].sort((a,b) => (a.created_at_raw || '') > (b.created_at_raw || '') ? -1 : 1);
+                    const latest = sorted[0];
+                    let topGap = '', topVal = 0;
+                    if (latest.scores) {
+                        for (const [skill, score] of Object.entries(latest.scores)) {
+                            const gap = (industryBench[skill] || 3.0) - score;
+                            if (gap > topVal) { topVal = gap; topGap = skill; }
+                        }
+                    }
+                    csv += `${s.name},${s.email},${latest.readiness_score},${topGap} (${topVal.toFixed(2)})\n`;
+                } else {
+                    csv += `${s.name},${s.email},0,None\n`;
+                }
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'department_analytics.csv';
+            a.click();
+        }
+    </script>
+</body>
+</html>
