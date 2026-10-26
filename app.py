@@ -14,13 +14,16 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
 
 # ============ DATABASE CONFIGURATION (NEON POSTGRESQL) ============
-# Pulls the DATABASE_URL from .env
-# Falls back to local SQLite if the environment variable is not set
 DATABASE_URL = os.getenv('DATABASE_URL')
+
 if DATABASE_URL:
-    # Fix for SQLAlchemy sometimes requiring the postgresql:// scheme instead of postgres://
+    # Fix for SQLAlchemy requiring the postgresql:// scheme
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
+    # Force SQLAlchemy to use psycopg2 instead of psycopg (version 3)
+    if DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
     
     app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
     print("🔗 Connected to Neon PostgreSQL Database")
